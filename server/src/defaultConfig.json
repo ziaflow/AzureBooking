@@ -1,0 +1,26 @@
+{
+  "communicationServicesConnectionString": "endpoint=https://acs-ui-dev.unitedstates.communication.azure.com/;accesskey=CEATBYMuKn+C5aFiRVU0Mz4byh1tV7I58k+C8nPbhFHKzW1Pfg4TIbf2eOrYIsLeVG8v/rA3vXNkw0IiENJiuQ==",
+  "microsoftBookingsUrl": "https://microsoftbookings.azurewebsites.net/?organization=financialservices&UICulture=en-US",
+  "chatEnabled": true,
+  "screenShareEnabled": true,
+  "companyName": "Lamna Healthcare",
+  "colorPalette": "#0078d4",
+  "waitingTitle": "Thank you for choosing Lamna Healthcare",
+  "waitingSubtitle": "Your clinician is joining the meeting",
+  "logoUrl": "",
+  "postCall": {
+    "survey": {
+      "type": "onequestionpoll",
+      "options": {
+        "title": "Tell us how we did",
+        "prompt": "How satisfied are you with this virtual appointment's audio and video quality?",
+        "pollType": "likeOrDislike",
+        "saveButtonText": "Continue"
+      }
+    }
+  },
+  "cosmosDb": {
+    "connectionString": "Connection string of your Cosmos DB account",
+    "dbName": "Name of the Cosmos Database"
+  }
+}
