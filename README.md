@@ -24,6 +24,16 @@ There are two ways to start using this app:
 - Use the Azure Communication Services Sample Builder. The Sample Builder is a wizard that lets you quickly make common customization choices, set up Microsoft Bookings integration, and deploy the app to your Azure subscription. See [here](https://aka.ms/virtual-visits) for more information about the Builder.
 - Configure and deploy manually. Follow the rest of this readme to learn how to get up and running locally, create a new Azure deployment, or update an existing one.
 
+### Agent Outbound Calling
+
+To initiate an outbound call (e.g. to follow up on a lead), an agent can navigate to the `/visit` page with the `outboundPhone` query parameter.
+
+```
+https://<your-app-url>/visit?outboundPhone=+15550199
+```
+
+This will launch the Agent Dashboard and automatically dial the provided phone number.
+
 ## Code Structure
 
 - /client: Frontend client.
