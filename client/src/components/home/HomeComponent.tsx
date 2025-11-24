@@ -72,6 +72,12 @@ const HomeButtons = ({ theme, setError }): JSX.Element => {
         text={'Join from link'}
         onClick={() => window.location.assign('/visit')}
       />
+      <HomeButton
+        theme={theme}
+        iconName={'Message'}
+        text={'Chat with us'}
+        onClick={() => window.location.assign('/chat')}
+      />
     </Stack>
   );
 };

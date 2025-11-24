@@ -23,6 +23,17 @@ There are two ways to start using this app:
 
 - Use the Azure Communication Services Sample Builder. The Sample Builder is a wizard that lets you quickly make common customization choices, set up Microsoft Bookings integration, and deploy the app to your Azure subscription. See [here](https://aka.ms/virtual-visits) for more information about the Builder.
 - Configure and deploy manually. Follow the rest of this readme to learn how to get up and running locally, create a new Azure deployment, or update an existing one.
+- **Deploy to ZiaFlow**: See [Deployment Guide](./deploy/DEPLOYMENT.md) for specific instructions on deploying to the ZiaFlow infrastructure.
+
+### Agent Outbound Calling
+
+To initiate an outbound call (e.g. to follow up on a lead), an agent can navigate to the `/visit` page with the `outboundPhone` query parameter.
+
+```
+https://<your-app-url>/visit?outboundPhone=+15550199
+```
+
+This will launch the Agent Dashboard and automatically dial the provided phone number.
 
 ## Code Structure
 
@@ -123,6 +134,11 @@ Where do I set this?
   - `VV_POSTCALL_SURVEY_ONEQUESTIONPOLL_SAVE_BUTTON_TEXT`. Example value: "Continue".
   - `VV_COSMOS_DB_CONNECTION_STRING`. Connection string of your cosmos DB account.
   - `VV_COSMOS_DB_NAME`. Name of the Cosmos Database.
+  - `VV_BOT_APP_ID`. The Microsoft App ID (Client ID) of your Azure Bot Service. This allows the bot to join the chat.
+  - `VV_LOGIC_APP_URL`. The URL of the Logic App HTTP Trigger to send lead generation data (Name, Email, Phone, Message) when a user starts a chat.
+  - `VV_OPENAI_REALTIME_ENDPOINT`. The Azure OpenAI Realtime API Endpoint (e.g. `wss://<resource>.openai.azure.com`).
+  - `VV_OPENAI_REALTIME_API_KEY`. The API Key for Azure OpenAI.
+  - `VV_OPENAI_REALTIME_DEPLOYMENT`. The deployment name for the GPT-4o Realtime model.
 
 - In addition to setting these values as system environment variables, you can set them in the defaultConfig.json file in the `/server/src` folder. In this case the environment value will take precedence.
 - The environment variables currently used in the defaultConfig.json are:
@@ -136,6 +152,8 @@ Where do I set this?
   - `waitingTitle`. Example value: "Thank you for choosing Lamna Healthcare".
   - `waitingSubtitle`. Example value: "Your clinician is joining the meeting".
   - `logoUrl`. Example value: "https://your_cdn/logo.png".
+  - `botAppId`. Example value: "00000000-0000-0000-0000-000000000000".
+  - `logicAppUrl`. Example value: "https://prod-00.westus.logic.azure.com:443/workflows/...".
   - `postCall`. [Learn more about how to configure post-call surveys](./docs/post-call-survey.md)
   - `cosmosDb`. [Learn more about how to access Cosmos DB](./docs/post-call-survey.md#databaseConfiguration)
 

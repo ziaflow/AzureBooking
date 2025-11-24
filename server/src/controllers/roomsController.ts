@@ -14,11 +14,12 @@ import {
 } from '../models/roomModel';
 import { ERROR_NO_USER_FOUND_IN_ROOM } from '../constants';
 
-export const createRoom = (identityClient: CommunicationIdentityClient, roomsClient: RoomsClient) => async (
-  _req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-): Promise<any> => {
+export const createRoom = (
+  identityClient: CommunicationIdentityClient,
+  roomsClient: RoomsClient,
+  botAppId?: string,
+  logicAppUrl?: string
+) => async (req: express.Request, res: express.Response, next: express.NextFunction): Promise<any> => {
   try {
     const presenter = await identityClient.createUser();
     const attendee = await identityClient.createUser();
@@ -29,19 +30,28 @@ export const createRoom = (identityClient: CommunicationIdentityClient, roomsCli
     validUntilDate.setHours(validFrom.getHours() + 1);
     const validUntil = new Date(validUntilDate);
 
+    const participantsPayload = [
+      {
+        id: presenter,
+        role: RoomParticipantRole.presenter
+      },
+      {
+        id: attendee,
+        role: RoomParticipantRole.attendee
+      }
+    ];
+
+    if (botAppId) {
+      participantsPayload.push({
+        id: { microsoftBotId: botAppId, isResourceAccountConfigured: false } as any,
+        role: RoomParticipantRole.presenter
+      });
+    }
+
     const createRoomOptions: CreateRoomOptions = {
       validFrom: validFrom,
       validUntil: validUntil,
-      participants: [
-        {
-          id: presenter,
-          role: RoomParticipantRole.presenter
-        },
-        {
-          id: attendee,
-          role: RoomParticipantRole.attendee
-        }
-      ]
+      participants: participantsPayload
     };
 
     // Create a room with the request payload
@@ -53,10 +63,16 @@ export const createRoom = (identityClient: CommunicationIdentityClient, roomsCli
 
     // Formulating participants
     const participants: TestAppointmentRoomParticipant[] = participantsList.map(
-      (participant: RoomParticipant): TestAppointmentRoomParticipant => ({
-        id: (participant.id as CommunicationUserIdentifier).communicationUserId as string,
-        role: participant.role as RoomParticipantRole
-      })
+      (participant: RoomParticipant): TestAppointmentRoomParticipant => {
+        const id = (participant.id as CommunicationUserIdentifier).communicationUserId
+          ? (participant.id as CommunicationUserIdentifier).communicationUserId
+          : (participant.id as any).microsoftBotId;
+
+        return {
+          id: id as string,
+          role: participant.role as RoomParticipantRole
+        };
+      }
     );
 
     // Formulate response
@@ -66,6 +82,30 @@ export const createRoom = (identityClient: CommunicationIdentityClient, roomsCli
       validFrom: room.validFrom.toISOString(),
       validUntil: room.validUntil.toISOString()
     };
+
+    // Trigger Logic App for Lead Gen Notification if configured
+    if (logicAppUrl && req.body && req.body.email) {
+      const { name, email, phone, message } = req.body;
+      try {
+        // Using global fetch (Node 18+)
+        fetch(logicAppUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            phone,
+            message,
+            roomId: room.id,
+            timestamp: new Date().toISOString()
+          })
+        }).catch((err) => console.error('Failed to trigger Logic App:', err));
+      } catch (e) {
+        console.error('Error triggering Logic App:', e);
+      }
+    }
 
     return res.status(201).send(response);
   } catch (error) {

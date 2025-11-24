@@ -12,7 +12,9 @@ import {
   VV_SCREENSHARE_ENABLED_ENV_NAME,
   VV_WAITING_SUBTITLE_ENV_NAME,
   VV_WAITING_TITLE_ENV_NAME,
-  VV_LOGO_URL_ENV_NAME
+  VV_LOGO_URL_ENV_NAME,
+  VV_BOT_APP_ID,
+  VV_LOGIC_APP_URL
 } from '../constants';
 
 import { ServerConfigModel, ClientConfigModel } from '../models/configModel';
@@ -41,6 +43,8 @@ export const getServerConfig = (): ServerConfigModel => {
     waitingTitle: process.env[VV_WAITING_TITLE_ENV_NAME] ?? defaultConfig.waitingTitle,
     waitingSubtitle: process.env[VV_WAITING_SUBTITLE_ENV_NAME] ?? defaultConfig.waitingSubtitle,
     logoUrl: process.env[VV_LOGO_URL_ENV_NAME] ?? defaultConfig.logoUrl,
+    botAppId: process.env[VV_BOT_APP_ID] ?? defaultConfig.botAppId,
+    logicAppUrl: process.env[VV_LOGIC_APP_URL] ?? defaultConfig.logicAppUrl,
     postCall: getPostCallConfig(defaultConfig),
     cosmosDb: getCosmosDbConfig(defaultConfig),
     callAutomation: getCallAutomationConfig(defaultConfig)

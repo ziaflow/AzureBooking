@@ -13,11 +13,17 @@ import { useEffect, useState } from 'react';
 import { getTeamsMeetingLink, getRoomCallLocator, getRoomsUserId, isValidRoomsLink } from './utils/GetMeetingLink';
 import { TeamsMeeting } from './components/teams/TeamsMeeting';
 import { RoomsMeeting } from './components/rooms/RoomsMeeting';
+import { AgentOutboundCall } from './components/AgentOutboundCall';
 import './styles/Common.css';
 
 const PARENT_ID = 'VisitSection';
 
 export const Visit = (): JSX.Element => {
+  const _getOutboundPhone = (query: string): string | undefined => {
+    const params = new URLSearchParams(query);
+    return params.get('outboundPhone') || undefined;
+  };
+
   const _getTeamsMeetingLinkLocator = (meetingLink: string): TeamsMeetingLinkLocator | undefined => {
     let teamsMeetingLinkModel: TeamsMeetingLinkLocator | undefined = undefined;
 
@@ -75,6 +81,7 @@ export const Visit = (): JSX.Element => {
     _getRoomCallLocator(window.location.search) // case of direct link to visit with rooms meeting link in URL
   );
   const [participantId] = useState<string | undefined>(_getParticipantId(window.location.search)); // case of direct link to visit with rooms meeting link in URL
+  const [outboundPhone] = useState<string | undefined>(_getOutboundPhone(window.location.search));
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
@@ -91,6 +98,7 @@ export const Visit = (): JSX.Element => {
 
   const isTeamsMeeting = teamsMeetingLinkLocator && teamsMeetingLinkLocator.meetingLink;
   const isRoomsMeeting = roomCallLocator && participantId;
+  const isOutboundCall = !!outboundPhone;
 
   if (error) {
     return <GenericError statusCode={error.statusCode} />;
@@ -101,7 +109,7 @@ export const Visit = (): JSX.Element => {
     return <Spinner data-testid="spinner" styles={fullSizeStyles} />;
   }
 
-  if (!isTeamsMeeting && !isRoomsMeeting) {
+  if (!isTeamsMeeting && !isRoomsMeeting && !isOutboundCall) {
     // If we have config and token but don't have a meeting link,
     // show a separate screen with "enter meeting link" textbox
     return (
@@ -134,6 +142,14 @@ export const Visit = (): JSX.Element => {
               config={config}
               locator={roomCallLocator}
               participantId={participantId}
+              fluentTheme={config.theme}
+              onDisplayError={(error) => setError(error)}
+            />
+          )}
+          {isOutboundCall && outboundPhone && (
+            <AgentOutboundCall
+              config={config}
+              phoneNumber={outboundPhone}
               fluentTheme={config.theme}
               onDisplayError={(error) => setError(error)}
             />
