@@ -59,6 +59,7 @@ export interface ServerConfigModel {
   waitingSubtitle: string;
   logoUrl: string;
   botAppId?: string;
+  logicAppUrl?: string;
   postCall?: PostCallConfig;
   cosmosDb?: CosmosDBConfig;
   callAutomation?: CallAutomationConfig;

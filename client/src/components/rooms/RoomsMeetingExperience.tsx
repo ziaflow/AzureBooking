@@ -88,7 +88,8 @@ const RoomsMeetingExperience = (props: RoomsMeetingExperienceProps): JSX.Element
   const callAutomationStarted = useRef(false);
   const eventSourceRef = useRef<EventSource | null>(null);
 
-  const displayName = userRole === RoomParticipantRole.presenter ? 'Presenter' : 'Attendee';
+  const storedDisplayName = sessionStorage.getItem('userDisplayName');
+  const displayName = storedDisplayName || (userRole === RoomParticipantRole.presenter ? 'Presenter' : 'Attendee');
   const formFactorValue = new MobileDetect(window.navigator.userAgent).mobile() ? 'mobile' : 'desktop';
 
   const [renderEndCallScreen, setRenderEndCallScreen] = useState<boolean>(false);

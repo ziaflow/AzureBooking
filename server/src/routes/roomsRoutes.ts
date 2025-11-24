@@ -9,12 +9,13 @@ import { createRoom, getToken } from '../controllers/roomsController';
 export const roomsRouter = (
   identityClient: CommunicationIdentityClient,
   roomsClient: RoomsClient,
-  botAppId?: string
+  botAppId?: string,
+  logicAppUrl?: string
 ): express.Router => {
   // Initialize router
   const router = express.Router();
 
-  router.post('/', createRoom(identityClient, roomsClient, botAppId));
+  router.post('/', createRoom(identityClient, roomsClient, botAppId, logicAppUrl));
   router.post('/token', getToken(identityClient, roomsClient));
 
   return router;

@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import { RoomParticipant, RoomParticipantRole } from '../models/RoomModel';
-import { createRoom } from './FetchRoomsResponse';
+import { createRoom, UserData } from './FetchRoomsResponse';
 import { makeRoomsJoinUrl } from './GetMeetingLink';
 
-export const createRoomAndRedirectUrl = async (): Promise<string> => {
+export const createRoomAndRedirectUrl = async (userData?: UserData): Promise<string> => {
   let redirectUrl: string;
   try {
-    const roomResponse = await createRoom();
+    const roomResponse = await createRoom(userData);
     const roomId = roomResponse.roomId;
     const userId = roomResponse.participants.find(
       (participant: RoomParticipant) => (participant.role as RoomParticipantRole) === RoomParticipantRole.presenter

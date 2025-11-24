@@ -124,6 +124,7 @@ Where do I set this?
   - `VV_COSMOS_DB_CONNECTION_STRING`. Connection string of your cosmos DB account.
   - `VV_COSMOS_DB_NAME`. Name of the Cosmos Database.
   - `VV_BOT_APP_ID`. The Microsoft App ID (Client ID) of your Azure Bot Service. This allows the bot to join the chat.
+  - `VV_LOGIC_APP_URL`. The URL of the Logic App HTTP Trigger to send lead generation data (Name, Email, Phone, Message) when a user starts a chat.
 
 - In addition to setting these values as system environment variables, you can set them in the defaultConfig.json file in the `/server/src` folder. In this case the environment value will take precedence.
 - The environment variables currently used in the defaultConfig.json are:
@@ -138,6 +139,7 @@ Where do I set this?
   - `waitingSubtitle`. Example value: "Your clinician is joining the meeting".
   - `logoUrl`. Example value: "https://your_cdn/logo.png".
   - `botAppId`. Example value: "00000000-0000-0000-0000-000000000000".
+  - `logicAppUrl`. Example value: "https://prod-00.westus.logic.azure.com:443/workflows/...".
   - `postCall`. [Learn more about how to configure post-call surveys](./docs/post-call-survey.md)
   - `cosmosDb`. [Learn more about how to access Cosmos DB](./docs/post-call-survey.md#databaseConfiguration)
 

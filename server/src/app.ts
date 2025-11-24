@@ -69,6 +69,10 @@ app.get('/visit', (_, res) => {
   res.sendFile(path.join(__dirname, 'public/visit.html'));
 });
 
+app.get('/chat', (_, res) => {
+  res.sendFile(path.join(__dirname, 'public/chat.html'));
+});
+
 /**
  * route: /api/connectToRoom
  * purpose: Calling: connect to an existing room
@@ -150,7 +154,7 @@ const roomsClient =
 
 app.get('/api/config', configController(config));
 app.get('/api/token', tokenController(identityClient, config));
-app.use('/api/rooms', roomsRouter(identityClient, roomsClient, config.botAppId));
+app.use('/api/rooms', roomsRouter(identityClient, roomsClient, config.botAppId, config.logicAppUrl));
 
 // Function to send events to all connected clients
 export const sendEventToClients = (event: string, data: Record<string, unknown>): void => {

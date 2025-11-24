@@ -28,12 +28,20 @@ export const fetchRoomsResponse = async (roomId: string, userId: string): Promis
   return roomResponse;
 };
 
-export const createRoom = async (): Promise<CreateRoomResponse> => {
+export interface UserData {
+  name: string;
+  email: string;
+  phone?: string;
+  message?: string;
+}
+
+export const createRoom = async (userData?: UserData): Promise<CreateRoomResponse> => {
   const response = await fetch('/api/rooms', {
     method: 'POST',
     headers: {
       'content-type': 'application/json;charset=UTF-8'
-    }
+    },
+    body: userData ? JSON.stringify(userData) : undefined
   });
   if (response.status !== 201) {
     throw new createError(

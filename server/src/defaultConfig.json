@@ -9,6 +9,7 @@
   "waitingSubtitle": "Your clinician is joining the meeting",
   "logoUrl": "",
   "botAppId": "",
+  "logicAppUrl": "",
   "postCall": {
     "survey": {
       "type": "onequestionpoll",
