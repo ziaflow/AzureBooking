@@ -28,6 +28,7 @@ export const VV_SERVER_HTTP_URL = 'VV_SERVER_HTTP_URL';
 export const VV_COGNITIONAPI_KEY = 'VV_COGNITIONAPI_KEY';
 export const VV_COGNITIONAPI_ENDPOINT = 'VV_COGNITIONAPI_ENDPOINT';
 export const VV_USE_SUMMARIZATION = 'VV_USE_SUMMARIZATION';
+export const VV_BOT_APP_ID = 'VV_BOT_APP_ID';
 
 export const ERROR_NO_USER_FOUND_IN_ROOM = 'The user is not a participant of the room';
 

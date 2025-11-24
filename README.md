@@ -123,6 +123,7 @@ Where do I set this?
   - `VV_POSTCALL_SURVEY_ONEQUESTIONPOLL_SAVE_BUTTON_TEXT`. Example value: "Continue".
   - `VV_COSMOS_DB_CONNECTION_STRING`. Connection string of your cosmos DB account.
   - `VV_COSMOS_DB_NAME`. Name of the Cosmos Database.
+  - `VV_BOT_APP_ID`. The Microsoft App ID (Client ID) of your Azure Bot Service. This allows the bot to join the chat.
 
 - In addition to setting these values as system environment variables, you can set them in the defaultConfig.json file in the `/server/src` folder. In this case the environment value will take precedence.
 - The environment variables currently used in the defaultConfig.json are:
@@ -136,6 +137,7 @@ Where do I set this?
   - `waitingTitle`. Example value: "Thank you for choosing Lamna Healthcare".
   - `waitingSubtitle`. Example value: "Your clinician is joining the meeting".
   - `logoUrl`. Example value: "https://your_cdn/logo.png".
+  - `botAppId`. Example value: "00000000-0000-0000-0000-000000000000".
   - `postCall`. [Learn more about how to configure post-call surveys](./docs/post-call-survey.md)
   - `cosmosDb`. [Learn more about how to access Cosmos DB](./docs/post-call-survey.md#databaseConfiguration)
 

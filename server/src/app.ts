@@ -150,7 +150,7 @@ const roomsClient =
 
 app.get('/api/config', configController(config));
 app.get('/api/token', tokenController(identityClient, config));
-app.use('/api/rooms', roomsRouter(identityClient, roomsClient));
+app.use('/api/rooms', roomsRouter(identityClient, roomsClient, config.botAppId));
 
 // Function to send events to all connected clients
 export const sendEventToClients = (event: string, data: Record<string, unknown>): void => {

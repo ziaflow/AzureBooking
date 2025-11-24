@@ -14,11 +14,11 @@ import {
 } from '../models/roomModel';
 import { ERROR_NO_USER_FOUND_IN_ROOM } from '../constants';
 
-export const createRoom = (identityClient: CommunicationIdentityClient, roomsClient: RoomsClient) => async (
-  _req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-): Promise<any> => {
+export const createRoom = (
+  identityClient: CommunicationIdentityClient,
+  roomsClient: RoomsClient,
+  botAppId?: string
+) => async (_req: express.Request, res: express.Response, next: express.NextFunction): Promise<any> => {
   try {
     const presenter = await identityClient.createUser();
     const attendee = await identityClient.createUser();
@@ -29,19 +29,28 @@ export const createRoom = (identityClient: CommunicationIdentityClient, roomsCli
     validUntilDate.setHours(validFrom.getHours() + 1);
     const validUntil = new Date(validUntilDate);
 
+    const participantsPayload = [
+      {
+        id: presenter,
+        role: RoomParticipantRole.presenter
+      },
+      {
+        id: attendee,
+        role: RoomParticipantRole.attendee
+      }
+    ];
+
+    if (botAppId) {
+      participantsPayload.push({
+        id: { microsoftBotId: botAppId, isResourceAccountConfigured: false } as any,
+        role: RoomParticipantRole.presenter
+      });
+    }
+
     const createRoomOptions: CreateRoomOptions = {
       validFrom: validFrom,
       validUntil: validUntil,
-      participants: [
-        {
-          id: presenter,
-          role: RoomParticipantRole.presenter
-        },
-        {
-          id: attendee,
-          role: RoomParticipantRole.attendee
-        }
-      ]
+      participants: participantsPayload
     };
 
     // Create a room with the request payload
@@ -53,10 +62,16 @@ export const createRoom = (identityClient: CommunicationIdentityClient, roomsCli
 
     // Formulating participants
     const participants: TestAppointmentRoomParticipant[] = participantsList.map(
-      (participant: RoomParticipant): TestAppointmentRoomParticipant => ({
-        id: (participant.id as CommunicationUserIdentifier).communicationUserId as string,
-        role: participant.role as RoomParticipantRole
-      })
+      (participant: RoomParticipant): TestAppointmentRoomParticipant => {
+        const id = (participant.id as CommunicationUserIdentifier).communicationUserId
+          ? (participant.id as CommunicationUserIdentifier).communicationUserId
+          : (participant.id as any).microsoftBotId;
+
+        return {
+          id: id as string,
+          role: participant.role as RoomParticipantRole
+        };
+      }
     );
 
     // Formulate response
