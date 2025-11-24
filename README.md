@@ -23,6 +23,7 @@ There are two ways to start using this app:
 
 - Use the Azure Communication Services Sample Builder. The Sample Builder is a wizard that lets you quickly make common customization choices, set up Microsoft Bookings integration, and deploy the app to your Azure subscription. See [here](https://aka.ms/virtual-visits) for more information about the Builder.
 - Configure and deploy manually. Follow the rest of this readme to learn how to get up and running locally, create a new Azure deployment, or update an existing one.
+- **Deploy to ZiaFlow**: See [Deployment Guide](./deploy/DEPLOYMENT.md) for specific instructions on deploying to the ZiaFlow infrastructure.
 
 ### Agent Outbound Calling
 
