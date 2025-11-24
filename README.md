@@ -135,6 +135,9 @@ Where do I set this?
   - `VV_COSMOS_DB_NAME`. Name of the Cosmos Database.
   - `VV_BOT_APP_ID`. The Microsoft App ID (Client ID) of your Azure Bot Service. This allows the bot to join the chat.
   - `VV_LOGIC_APP_URL`. The URL of the Logic App HTTP Trigger to send lead generation data (Name, Email, Phone, Message) when a user starts a chat.
+  - `VV_OPENAI_REALTIME_ENDPOINT`. The Azure OpenAI Realtime API Endpoint (e.g. `wss://<resource>.openai.azure.com`).
+  - `VV_OPENAI_REALTIME_API_KEY`. The API Key for Azure OpenAI.
+  - `VV_OPENAI_REALTIME_DEPLOYMENT`. The deployment name for the GPT-4o Realtime model.
 
 - In addition to setting these values as system environment variables, you can set them in the defaultConfig.json file in the `/server/src` folder. In this case the environment value will take precedence.
 - The environment variables currently used in the defaultConfig.json are:

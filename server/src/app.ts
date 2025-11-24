@@ -28,6 +28,8 @@ import fetchTranscriptState from './routes/fetchTranscriptState';
 import fetchParticipants from './routes/fetchParticipants';
 import updateParicipants from './routes/updateParticipants';
 import { handleTranscriptionEvent } from './utils/callAutomationUtils';
+import { incomingCallController } from './controllers/incomingCallController';
+import { RealTimeAgent } from './services/realTimeAgent';
 
 const app = express();
 export const clients: express.Response[] = []; // Store connected clients
@@ -72,6 +74,8 @@ app.get('/visit', (_, res) => {
 app.get('/chat', (_, res) => {
   res.sendFile(path.join(__dirname, 'public/chat.html'));
 });
+
+app.post('/api/incomingCall', incomingCallController);
 
 /**
  * route: /api/connectToRoom
@@ -223,7 +227,13 @@ const server = http.createServer(app);
 
 const wss = new WebSocket.Server({ server });
 
-wss.on('connection', (ws) => {
+wss.on('connection', (ws, req) => {
+  if (req.url === '/api/media-stream') {
+    console.log('New Media Stream connection');
+    new RealTimeAgent(ws);
+    return;
+  }
+
   let transcriptionCorrelationId: string | undefined;
 
   ws.on('open', () => {
@@ -231,13 +241,17 @@ wss.on('connection', (ws) => {
   });
 
   ws.on('message', (message: WebSocket.RawData) => {
-    const decoder = new TextDecoder();
-    const messageData = JSON.parse(decoder.decode(message as ArrayBuffer));
-    if (
-      ('kind' in messageData && messageData.kind === 'TranscriptionMetadata') ||
-      ('kind' in messageData && messageData.kind === 'TranscriptionData')
-    ) {
-      transcriptionCorrelationId = handleTranscriptionEvent(message, transcriptionCorrelationId);
+    try {
+        const decoder = new TextDecoder();
+        const messageData = JSON.parse(decoder.decode(message as ArrayBuffer));
+        if (
+        ('kind' in messageData && messageData.kind === 'TranscriptionMetadata') ||
+        ('kind' in messageData && messageData.kind === 'TranscriptionData')
+        ) {
+        transcriptionCorrelationId = handleTranscriptionEvent(message, transcriptionCorrelationId);
+        }
+    } catch (e) {
+        // ignore errors for non-JSON messages or other formats
     }
   });
 
