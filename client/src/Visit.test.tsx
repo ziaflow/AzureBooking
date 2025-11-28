@@ -24,6 +24,15 @@ import { RoomParticipantRole } from './models/RoomModel';
 import { render } from '@testing-library/react';
 
 jest.mock('@azure/communication-react', () => {
+  const {
+    createMockCallAdapter,
+    createMockCallAgent,
+    createMockCallComposite,
+    createMockCallWithChatAdapter,
+    createMockCallWithChatComposite,
+    createMockStatefulCallClient,
+    createMockStatefulChatClient
+  } = jest.requireActual('./utils/TestUtils');
   return {
     ...jest.requireActual('@azure/communication-react'),
     createAzureCommunicationCallWithChatAdapterFromClients: () => createMockCallWithChatAdapter(),

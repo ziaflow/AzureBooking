@@ -9,13 +9,16 @@ import http from 'http';
 import rateLimit from 'express-rate-limit';
 import { CommunicationIdentityClient } from '@azure/communication-identity';
 import { RoomsClient } from '@azure/communication-rooms';
+import { ChatClient } from '@azure/communication-chat';
 import { getServerConfig } from './utils/getConfig';
 import { removeJsonpCallback } from './utils/removeJsonpCallback';
 import { roomsRouter } from './routes/roomsRoutes';
 import { configController } from './controllers/configController';
 import { tokenController } from './controllers/tokenController';
+import { botController } from 'bot/src/controllers/botController';
 import { storeSurveyResult } from './controllers/surveyController';
 import { createSurveyDBHandler } from './databaseHandlers/surveyDBHandler';
+import { BotFrameworkAdapter } from 'botbuilder';
 import { ERROR_PAYLOAD_500 } from './constants';
 import connectRoomsCall from './routes/connectToRoomsCall';
 import startTranscription from './routes/startTranscription';
@@ -148,9 +151,19 @@ const identityClient =
 const roomsClient =
   process.env.NODE_ENV === 'test' ? ({} as RoomsClient) : new RoomsClient(config.communicationServicesConnectionString);
 
+const chatClient =
+  process.env.NODE_ENV === 'test' ? ({} as ChatClient) : new ChatClient(config.communicationServicesConnectionString);
+
 app.get('/api/config', configController(config));
-app.get('/api/token', tokenController(identityClient, config));
+app.get('/api/token', tokenController(identityClient, chatClient, config));
 app.use('/api/rooms', roomsRouter(identityClient, roomsClient));
+
+const adapter = new BotFrameworkAdapter({
+  appId: process.env.MicrosoftAppId,
+  appPassword: process.env.MicrosoftAppPassword
+});
+
+app.post('/api/messages', botController(adapter));
 
 // Function to send events to all connected clients
 export const sendEventToClients = (event: string, data: Record<string, unknown>): void => {
