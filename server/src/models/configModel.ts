@@ -61,6 +61,7 @@ export interface ServerConfigModel {
   postCall?: PostCallConfig;
   cosmosDb?: CosmosDBConfig;
   callAutomation?: CallAutomationConfig;
+  botAppId?: string;
 }
 
 export interface ClientConfigModel {

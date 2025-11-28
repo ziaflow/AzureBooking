@@ -12,7 +12,8 @@ import {
   VV_SCREENSHARE_ENABLED_ENV_NAME,
   VV_WAITING_SUBTITLE_ENV_NAME,
   VV_WAITING_TITLE_ENV_NAME,
-  VV_LOGO_URL_ENV_NAME
+  VV_LOGO_URL_ENV_NAME,
+  VV_BOT_APP_ID
 } from '../constants';
 
 import { ServerConfigModel, ClientConfigModel } from '../models/configModel';
@@ -43,7 +44,8 @@ export const getServerConfig = (): ServerConfigModel => {
     logoUrl: process.env[VV_LOGO_URL_ENV_NAME] ?? defaultConfig.logoUrl,
     postCall: getPostCallConfig(defaultConfig),
     cosmosDb: getCosmosDbConfig(defaultConfig),
-    callAutomation: getCallAutomationConfig(defaultConfig)
+    callAutomation: getCallAutomationConfig(defaultConfig),
+    botAppId: process.env[VV_BOT_APP_ID]
   } as ServerConfigModel;
   return config;
 };

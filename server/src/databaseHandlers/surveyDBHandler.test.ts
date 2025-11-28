@@ -210,6 +210,10 @@ describe('createSurveyDBHandler', () => {
       }
     };
 
+    jest.spyOn(Cosmos, 'CosmosClient').mockImplementation(() => {
+      return {} as any;
+    });
+
     const surveyDBHandler = createSurveyDBHandler(config as ServerConfigModel);
 
     expect(surveyDBHandler).toBeDefined();

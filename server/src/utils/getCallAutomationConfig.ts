@@ -2,48 +2,40 @@
 // Licensed under the MIT license.
 
 import {
+  VV_AUTO_START_TRANSCRIPTION,
   VV_COGNITIONAPI_ENDPOINT,
   VV_COGNITIONAPI_KEY,
   VV_SERVER_HTTP_URL,
+  VV_SERVER_WEBSOCKET_PORT,
   VV_SERVER_WEBSOCKET_URL,
   VV_TRANSCRIPTION_BEHAVIOR,
   VV_USE_SUMMARIZATION
 } from '../constants';
-import { CallAutomationConfig, ServerConfigModel, TranscriptionBehavior } from '../models/configModel';
+import { CallAutomationConfig, ServerConfigModel, TranscriptionClientOptions } from '../models/configModel';
 
 export const getCallAutomationConfig = (defaultConfig: ServerConfigModel): CallAutomationConfig | undefined => {
-  const cognitionAPIEndpoint =
-    process.env[VV_COGNITIONAPI_ENDPOINT] ?? (defaultConfig.callAutomation?.CognitionAPIEndpoint as string);
-  const cognitionAPIKey = process.env[VV_COGNITIONAPI_KEY] ?? (defaultConfig.callAutomation?.CognitionAPIKey as string);
-  const serverHttpUrl = process.env[VV_SERVER_HTTP_URL] ?? (defaultConfig.callAutomation?.ServerHttpUrl as string);
-
-  const serverWebSocketUrl =
-    process.env[VV_SERVER_WEBSOCKET_URL] ?? (defaultConfig.callAutomation?.ServerWebSocketUrl as string);
-  const useSummarization =
-    typeof process.env[VV_USE_SUMMARIZATION] === 'string'
-      ? process.env[VV_USE_SUMMARIZATION] === 'true'
-        ? true
-        : false
-      : defaultConfig.callAutomation?.clientOptions?.summarization ?? false;
-
-  const autoStartTranscription =
-    process.env[VV_TRANSCRIPTION_BEHAVIOR] ?? defaultConfig.callAutomation?.clientOptions?.transcription;
-
-  const clientOptions = {
-    transcription: autoStartTranscription as TranscriptionBehavior,
-    summarization: useSummarization
-  };
-
-  if (!cognitionAPIEndpoint || !cognitionAPIKey || !serverHttpUrl || !serverWebSocketUrl) {
+  const callAutomationConfig = defaultConfig.callAutomation;
+  if (!callAutomationConfig) {
     return undefined;
   }
-  const callAutomationConfig: CallAutomationConfig = {
-    CognitionAPIEndpoint: cognitionAPIEndpoint,
-    CognitionAPIKey: cognitionAPIKey,
-    ServerHttpUrl: serverHttpUrl,
-    ServerWebSocketUrl: serverWebSocketUrl,
-    clientOptions
+
+  const transcriptionClientOptions: TranscriptionClientOptions = {
+    transcription:
+      (process.env[VV_TRANSCRIPTION_BEHAVIOR] as 'auto' | 'manual' | 'none') ??
+      callAutomationConfig.clientOptions?.transcription ??
+      'none',
+    summarization:
+      typeof process.env[VV_USE_SUMMARIZATION] === 'string'
+        ? process.env[VV_USE_SUMMARIZATION]?.toLowerCase() === 'true'
+        : callAutomationConfig.clientOptions?.summarization ?? false
   };
 
-  return callAutomationConfig;
+  const config = {
+    CognitionAPIEndpoint: process.env[VV_COGNITIONAPI_ENDPOINT] ?? callAutomationConfig.CognitionAPIEndpoint,
+    CognitionAPIKey: process.env[VV_COGNITIONAPI_KEY] ?? callAutomationConfig.CognitionAPIKey,
+    ServerHttpUrl: process.env[VV_SERVER_HTTP_URL] ?? callAutomationConfig.ServerHttpUrl,
+    ServerWebSocketUrl: process.env[VV_SERVER_WEBSOCKET_URL] ?? callAutomationConfig.ServerWebSocketUrl,
+    clientOptions: transcriptionClientOptions
+  } as CallAutomationConfig;
+  return config;
 };

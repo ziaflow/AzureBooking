@@ -3,7 +3,7 @@
   "version": "1.5.0",
   "private": true,
   "scripts": {
-    "test": "node scripts/test.js --config ./jest.config.js",
+    "test": "NODE_OPTIONS=--experimental-vm-modules node scripts/test.js --config ./jest.config.js",
     "start:client": "node scripts/start.js",
     "start:project": "concurrently \"cd ../server && npm run start:server\" \"node scripts/start.js\"",
     "start:prod": "cd ../dist && node server.js",

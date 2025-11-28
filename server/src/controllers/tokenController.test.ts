@@ -20,42 +20,70 @@ function createMockedResponseObject(): any {
   return res;
 }
 
+import { ChatClient } from '@azure/communication-chat';
+
 describe('tokenController', () => {
   const cfg = getDefaultConfig() as ServerConfigModel;
-  const mockClient = {
-    createUserAndToken: async (scopes) => {
+  const mockUser = { communicationUserId: 'test' };
+  const mockIdentityClient = {
+    createUserAndToken: jest.fn().mockImplementation(async (scopes) => {
       requestedScopes = scopes;
-      return {};
-    }
+      return { user: mockUser, token: 'test-token' };
+    })
+  };
+  const mockChatClient = {
+    createChatThread: jest.fn()
   };
   let requestedScopes: any;
   const mockResponse = createMockedResponseObject();
   const mockNextFunction: NextFunction = jest.fn();
 
-  test('should request only voip scope when chat is disabled', () => {
+  beforeEach(() => {
+    requestedScopes = undefined;
+    (mockNextFunction as jest.Mock).mockClear();
+  });
+
+  test('should request only voip scope when chat is disabled', async () => {
     cfg.chatEnabled = false;
 
-    const controller = tokenController(mockClient as CommunicationIdentityClient, cfg);
-    controller({} as any, mockResponse, mockNextFunction);
+    const controller = tokenController(
+      mockIdentityClient as any,
+      mockChatClient as any,
+      cfg
+    );
+    await controller({} as any, mockResponse, mockNextFunction);
 
     expect(requestedScopes).toEqual(['voip']);
+    expect(mockChatClient.createChatThread).not.toHaveBeenCalled();
   });
 
-  test('should request both chat and voip scopes when chat is enabled', () => {
+  test('should request both chat and voip scopes when chat is enabled', async () => {
     cfg.chatEnabled = true;
+    cfg.botAppId = 'bot-id';
+    mockChatClient.createChatThread.mockResolvedValue({ chatThread: { id: 'thread-id' } });
 
-    const controller = tokenController(mockClient as CommunicationIdentityClient, cfg);
-    controller({} as any, mockResponse, mockNextFunction);
+    const controller = tokenController(
+      mockIdentityClient as any,
+      mockChatClient as any,
+      cfg
+    );
+    await controller({} as any, mockResponse, mockNextFunction);
 
     expect(requestedScopes).toEqual(expect.arrayContaining(['voip', 'chat']));
+    expect(mockChatClient.createChatThread).toHaveBeenCalled();
+    expect(mockResponse.lastJson.threadId).toBe('thread-id');
   });
 
-  test('delegates errors to other handlers with next()', () => {
+  test('delegates errors to other handlers with next()', async () => {
     cfg.chatEnabled = true;
-    const invalidClient = {};
+    mockIdentityClient.createUserAndToken.mockRejectedValue(new Error('test error'));
 
-    const controller = tokenController(invalidClient as CommunicationIdentityClient, cfg);
-    controller({} as any, mockResponse, mockNextFunction);
+    const controller = tokenController(
+      mockIdentityClient as any,
+      mockChatClient as any,
+      cfg
+    );
+    await controller({} as any, mockResponse, mockNextFunction);
 
     expect(mockNextFunction).toHaveBeenCalledTimes(1);
   });
